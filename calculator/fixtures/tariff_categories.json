@@ -1,0 +1,65 @@
+[
+  {
+    "model": "calculator.tariffcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Electronique grand public - Enceinte Bluetooth",
+      "hs_code": "8518.22.0000",
+      "origin_country": "Chine",
+      "mfn_base_rate": "0.0450",
+      "section_301_rate": "0.0750",
+      "additional_surtax_rate": "0.1250",
+      "confidence": "a_verifier",
+      "notes": "Taux MFN a confirmer selon le sous-code exact. Verifier les exclusions USTR actives.",
+      "source": "USTR Section 301 Tariff Actions; CBP ruling N326117",
+      "last_verified": "2026-09-02",
+      "next_review": "2026-10-02",
+      "validated_by_expert": false,
+      "expert_comments": "",
+      "created_at": "2026-09-02T00:00:00Z",
+      "updated_at": "2026-09-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculator.tariffcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Textile / habillement - T-shirt en coton",
+      "hs_code": "6109.10.0000",
+      "origin_country": "Chine",
+      "mfn_base_rate": "0.1650",
+      "section_301_rate": "0.2500",
+      "additional_surtax_rate": "0.1250",
+      "confidence": "brouillon",
+      "notes": "Ecart enorme entre Liste 3 (25%) et Liste 4A (7.5%) selon classification exacte - a trancher par l'experte.",
+      "source": "USTR Section 301 lists; guides sectoriels 2026",
+      "last_verified": "2026-09-02",
+      "next_review": "2026-10-02",
+      "validated_by_expert": false,
+      "expert_comments": "",
+      "created_at": "2026-09-02T00:00:00Z",
+      "updated_at": "2026-09-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculator.tariffcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Maison / articles menagers - Ustensiles de cuisine",
+      "hs_code": "7323.93.0000",
+      "origin_country": "Chine",
+      "mfn_base_rate": "0.0200",
+      "section_301_rate": "0.0750",
+      "additional_surtax_rate": "0.1250",
+      "confidence": "faible_confiance",
+      "notes": "Categorie heterogene (metal/plastique/bois) - exemple de structure seulement, ne pas utiliser tel quel.",
+      "source": "Guide sectoriel Section 301 2026 (a completer via USITC HTS lookup)",
+      "last_verified": "2026-09-02",
+      "next_review": "2026-10-02",
+      "validated_by_expert": false,
+      "expert_comments": "",
+      "created_at": "2026-09-02T00:00:00Z",
+      "updated_at": "2026-09-02T00:00:00Z"
+    }
+  }
+]

@@ -1,0 +1,35 @@
+{% extends "calculator/base.html" %}
+{% block title %}Historique - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Historique des calculs</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white shadow-sm">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Produit</th>
+                <th>Categorie</th>
+                <th>Quantite</th>
+                <th>Landed cost / unite</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for calc in calculations %}
+            <tr>
+                <td>{{ calc.created_at|date:"d/m/Y" }}</td>
+                <td>{{ calc.product_name|default:"—" }}</td>
+                <td>{{ calc.category.name }}</td>
+                <td>{{ calc.quantity }}</td>
+                <td>{{ calc.landed_cost_per_unit|floatformat:2 }} $</td>
+                <td><a href="{% url 'calculation_result' calc.pk %}">Voir</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-muted">Aucun calcul pour l'instant.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

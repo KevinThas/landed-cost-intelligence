@@ -1,0 +1,36 @@
+{% extends "calculator/base.html" %}
+{% block title %}Nouveau calcul - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h1 class="h3 mb-4">Calculer le landed cost d'un produit</h1>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">Merci de corriger les champs indiques ci-dessous.</div>
+        {% endif %}
+
+        <form method="post" class="card p-4 shadow-sm">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100">Calculer</button>
+        </form>
+
+        <p class="text-muted small mt-3">
+            Aucune categorie disponible ? Ajoutez-en une dans la
+            <a href="/admin/calculator/tariffcategory/add/">matrice tarifaire (admin)</a>.
+        </p>
+    </div>
+</div>
+{% endblock %}

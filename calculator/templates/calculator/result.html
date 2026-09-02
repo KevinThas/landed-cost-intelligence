@@ -1,0 +1,55 @@
+{% extends "calculator/base.html" %}
+{% block title %}Resultat - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h1 class="h3 mb-1">{{ calculation.product_name|default:calculation.category.name }}</h1>
+        <p class="text-muted">Categorie : {{ calculation.category.name }}
+            &mdash; taux total effectif : {{ calculation.category.total_effective_rate|floatformat:1 }}
+            (confiance : {{ calculation.category.get_confidence_display }})
+        </p>
+
+        {% if not calculation.category.validated_by_expert %}
+        <div class="alert alert-warning">
+            Cette categorie n'est pas encore validee par l'experte metier — traitez ce chiffre comme une estimation.
+        </div>
+        {% endif %}
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><td>Cout produit total</td><td class="text-end">{{ calculation.product_cost_total|floatformat:2 }} $</td></tr>
+                    <tr><td>Freight total</td><td class="text-end">{{ calculation.freight_cost_total|floatformat:2 }} $</td></tr>
+                    <tr><td>Droits de douane estimes</td><td class="text-end">{{ calculation.duty_amount|floatformat:2 }} $</td></tr>
+                    <tr class="border-top fw-bold"><td>Landed cost total</td><td class="text-end">{{ calculation.landed_cost_total|floatformat:2 }} $</td></tr>
+                    <tr class="fw-bold"><td>Landed cost / unite</td><td class="text-end">{{ calculation.landed_cost_per_unit|floatformat:2 }} $</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5">Rentabilite</h2>
+                <table class="table table-borderless mb-0">
+                    <tr><td>Prix de vente minimum (break-even)</td>
+                        <td class="text-end">
+                            {% if calculation.breakeven_price %}{{ calculation.breakeven_price|floatformat:2 }} $
+                            {% else %}n/a{% endif %}
+                        </td></tr>
+                    {% if calculation.target_sale_price %}
+                    <tr><td>Prix de vente cible</td><td class="text-end">{{ calculation.target_sale_price|floatformat:2 }} $</td></tr>
+                    <tr><td>Marge / unite</td><td class="text-end">{{ calculation.margin_per_unit|floatformat:2 }} $</td></tr>
+                    <tr><td>ROI</td><td class="text-end">
+                        {% if calculation.roi_pct %}{{ calculation.roi_pct|floatformat:1 }} %{% else %}n/a{% endif %}
+                    </td></tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <a href="{% url 'calculate' %}" class="btn btn-outline-secondary">Nouveau calcul</a>
+        <a href="{% url 'calculation_history' %}" class="btn btn-outline-secondary">Voir l'historique</a>
+    </div>
+</div>
+{% endblock %}
