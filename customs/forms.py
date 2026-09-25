@@ -1,8 +1,105 @@
+from decimal import Decimal
+
 from django import forms
 from django.db import transaction
 
+from .classification import LINE_KO, LINE_OK
+from .costing import DESTINATIONS
 from .fibres import composition_total_error, parse_composition
-from .models import ACCESSORY_CHOICES, ClassificationRule, Garment, GarmentFibre
+from .models import ACCESSORY_CHOICES, ClassificationRule, Garment, GarmentFibre, GarmentQuote, TariffLine
+
+
+def _percent_field(label, required=False, help_text="", initial=None):
+    return forms.DecimalField(
+        label=label, required=required, min_value=0, max_value=100, max_digits=5, decimal_places=2,
+        help_text=help_text, initial=initial,
+    )
+
+
+def _amount_field(label, required=True, min_value=0, initial=None, help_text=""):
+    return forms.DecimalField(
+        label=label, required=required, min_value=min_value, max_digits=12, decimal_places=2,
+        initial=initial, help_text=help_text,
+    )
+
+
+class QuoteForm(forms.Form):
+    tariff_line = forms.ModelChoiceField(
+        label="Ligne tarifaire", queryset=TariffLine.objects.none(), required=False,
+        empty_label="Aucune : je saisis le taux moi-même",
+    )
+    duty_rate_pct = _percent_field(
+        "Taux de droits (%)", help_text="Laissez vide pour reprendre le droit de la ligne choisie.",
+    )
+    all_in_minimum_pct = _percent_field(
+        "Droit total minimum « tout compris » (%)",
+        help_text=(
+            "Facultatif. Si renseigné, le droit retenu est le plus élevé entre la ligne et ce minimum "
+            "(ex. la règle des 15 % « tout compris » appliquée en 2025 aux produits européens vers les "
+            "États-Unis). Règle à vérifier avant usage : elle peut avoir changé."
+        ),
+    )
+    vat_pct = _percent_field("TVA à l'import (%)", required=True)
+    quantity = forms.IntegerField(label="Quantité (pièces)", min_value=1)
+    unit_price = _amount_field("Prix unitaire d'achat, hors taxes (€)", min_value=Decimal("0.01"))
+    freight_total = _amount_field(
+        "Transport international + assurance, total (€)", required=False, initial=0,
+        help_text="Frais du trajet complet jusqu'au port ou à l'aéroport d'arrivée.",
+    )
+    other_costs_total = _amount_field(
+        "Autres frais, total (€)", required=False, initial=0,
+        help_text="Courtier, manutention, frais de dossier, taxe de dédouanement américaine (MPF/HMF)…",
+    )
+
+    def __init__(self, *args, destination, matches, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.destination = destination
+        self.matches = {match.line.pk: match for match in matches}
+        line_field = self.fields["tariff_line"]
+        line_field.queryset = TariffLine.objects.filter(pk__in=self.matches)
+        line_field.label_from_instance = self._line_label
+        default_vat = DESTINATIONS[destination].default_vat_rate * 100
+        self.fields["vat_pct"].initial = default_vat.normalize()
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "form-select" if isinstance(field.widget, forms.Select) else "form-control"
+
+    def _line_label(self, line):
+        status = self.matches[line.pk].status
+        suffix = {LINE_OK: " — condition de fibre remplie", LINE_KO: " — condition de fibre non remplie"}.get(status, "")
+        description = line.description if len(line.description) <= 80 else line.description[:77] + "…"
+        return f"{line.code} · {line.duty_display} · {description}{suffix}"
+
+    def clean(self):
+        cleaned = super().clean()
+        if self.errors:
+            return cleaned
+        line = cleaned.get("tariff_line")
+        rate_pct = cleaned.get("duty_rate_pct")
+        if rate_pct is not None:
+            cleaned["duty_rate"] = (rate_pct / 100).quantize(Decimal("0.0001"))
+        elif line is None:
+            self.add_error("duty_rate_pct", "Choisissez une ligne tarifaire ou saisissez le taux de droits.")
+        elif line.ad_valorem_rate is None:
+            self.add_error("duty_rate_pct", "Cette ligne n'a pas de droit ad valorem renseigné : saisissez le taux.")
+        else:
+            cleaned["duty_rate"] = line.ad_valorem_rate
+        return cleaned
+
+    def save(self, garment):
+        data = self.cleaned_data
+        minimum = data.get("all_in_minimum_pct")
+        return GarmentQuote.objects.create(
+            garment=garment,
+            destination=self.destination,
+            tariff_line=data.get("tariff_line"),
+            duty_rate=data["duty_rate"],
+            all_in_minimum_rate=None if minimum is None else (minimum / 100).quantize(Decimal("0.0001")),
+            vat_rate=(data["vat_pct"] / 100).quantize(Decimal("0.0001")),
+            quantity=data["quantity"],
+            unit_price=data["unit_price"],
+            freight_total=data.get("freight_total") or Decimal(0),
+            other_costs_total=data.get("other_costs_total") or Decimal(0),
+        )
 
 
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024

@@ -10,12 +10,29 @@
     </div>
 </div>
 
-{% if garments %}
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Rechercher par nom ou référence">
+    </div>
+    <div class="col-md-4">
+        <select name="type" class="form-select">
+            <option value="">Tous les types</option>
+            {% for type in types %}<option value="{{ type }}"{% if type == selected_type %} selected{% endif %}>{{ type }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-secondary">Filtrer</button>
+    </div>
+</form>
+
+{% if page.object_list %}
+<p class="text-muted small">{{ page.paginator.count }} vêtement{{ page.paginator.count|pluralize }}{% if query or selected_type %} correspondant{{ page.paginator.count|pluralize }}{% endif %}
+    {% if query or selected_type %}· <a href="{% url 'garment_list' %}">effacer le filtre</a>{% endif %}</p>
 <div class="table-responsive card shadow-sm">
     <table class="table table-hover mb-0 align-middle">
         <thead><tr><th>Vêtement</th><th>Type</th><th>Composition</th><th>Fabriqué en</th><th>Saisi le</th></tr></thead>
         <tbody>
-        {% for garment in garments %}
+        {% for garment in page.object_list %}
             <tr>
                 <td><a href="{% url 'garment_detail' garment.pk %}">{{ garment.name }}</a>{% if garment.reference %}<div class="small text-muted">{{ garment.reference }}</div>{% endif %}</td>
                 <td>{{ garment.garment_type }}</td>
@@ -27,6 +44,9 @@
         </tbody>
     </table>
 </div>
+{% include "customs/_pagination.html" %}
+{% elif query or selected_type %}
+<div class="alert alert-info">Aucun vêtement ne correspond. <a href="{% url 'garment_list' %}">Effacer le filtre</a></div>
 {% else %}
 <div class="alert alert-info">Aucun vêtement pour le moment.</div>
 {% endif %}

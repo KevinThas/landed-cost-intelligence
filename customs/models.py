@@ -1,8 +1,13 @@
+from decimal import Decimal
+from functools import cached_property
+
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from calculator.models import TariffCategory
 
+from . import costing
 from .fibres import FIBRE_CHOICES, FIBRE_LABELS, GROUP_CHOICES
 
 Confidence = TariffCategory.Confidence
@@ -228,3 +233,51 @@ class GarmentFibre(models.Model):
 
     def __str__(self):
         return f"{self.percent} % {self.get_fibre_display()}"
+
+
+class GarmentQuote(models.Model):
+    """Un calcul de coût d'arrivée (landed cost) d'un vêtement vers un pays destinataire."""
+
+    class Destination(models.TextChoices):
+        US = "US", "États-Unis"
+        CN = "CN", "Chine"
+
+    garment = models.ForeignKey(Garment, on_delete=models.CASCADE, related_name="quotes")
+    destination = models.CharField("Pays destinataire", max_length=2, choices=Destination.choices)
+    tariff_line = models.ForeignKey(
+        TariffLine, on_delete=models.SET_NULL, null=True, blank=True, related_name="+",
+        verbose_name="Ligne tarifaire utilisée",
+    )
+    duty_rate = models.DecimalField("Taux de droits", max_digits=6, decimal_places=4)
+    all_in_minimum_rate = models.DecimalField(
+        "Droit total minimum tout compris", max_digits=6, decimal_places=4, null=True, blank=True,
+    )
+    vat_rate = models.DecimalField("TVA à l'import", max_digits=6, decimal_places=4, default=0)
+
+    quantity = models.PositiveIntegerField("Quantité", validators=[MinValueValidator(1)])
+    unit_price = models.DecimalField(
+        "Prix unitaire d'achat", max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    freight_total = models.DecimalField(
+        "Transport international + assurance", max_digits=12, decimal_places=2, default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+    )
+    other_costs_total = models.DecimalField(
+        "Autres frais", max_digits=12, decimal_places=2, default=0, validators=[MinValueValidator(Decimal("0"))],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Devis de coût d'arrivée"
+        verbose_name_plural = "Devis de coût d'arrivée"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.garment} → {self.get_destination_display()} ({self.quantity} pièces)"
+
+    @cached_property
+    def breakdown(self):
+        return costing.compute(
+            self.destination, self.quantity, self.unit_price, self.freight_total, self.other_costs_total,
+            self.duty_rate, self.all_in_minimum_rate, self.vat_rate,
+        )

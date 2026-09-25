@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CalculationForm
 from .models import Calculation
@@ -18,7 +18,7 @@ def calculate(request):
 
 
 def calculation_result(request, pk):
-    calculation = Calculation.objects.select_related("category").get(pk=pk)
+    calculation = get_object_or_404(Calculation.objects.select_related("category"), pk=pk)
     return render(request, "calculator/result.html", {"calculation": calculation})
 
 

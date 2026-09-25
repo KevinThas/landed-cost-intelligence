@@ -46,9 +46,13 @@ source .venv/bin/activate   # si pas deja active
 python manage.py runserver
 ```
 
-- Calculateur : http://127.0.0.1:8000/
+- Accueil : http://127.0.0.1:8000/ (mene a la classification d'un vetement)
 - Classer un vetement (codes douaniers FR / USA / Chine) : http://127.0.0.1:8000/vetements/nouveau/
+- Liste des vetements (recherche, filtre par type) : http://127.0.0.1:8000/vetements/
+- Cout d'arrivee d'un vetement vers les USA ou la Chine : bouton "Calculer vers ..." sur la fiche du vetement ;
+  historique : http://127.0.0.1:8000/vetements/devis/
 - Importer plusieurs vetements depuis Excel (modele telechargeable) : http://127.0.0.1:8000/vetements/import/
+- Ancien calculateur Amazon FBA (Chine -> USA) : http://127.0.0.1:8000/calcul/
 - Admin (matrice tarifaire + historique) : http://127.0.0.1:8000/admin/
 
 Toutes les pages demandent une connexion (le compte cree avec `createsuperuser`).

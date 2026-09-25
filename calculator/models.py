@@ -62,6 +62,10 @@ class TariffCategory(models.Model):
         """Taux total de droits applicable a cette categorie."""
         return self.mfn_base_rate + self.section_301_rate + self.additional_surtax_rate
 
+    @property
+    def total_effective_rate_display(self):
+        return f"{(self.total_effective_rate * 100).normalize():f}".replace(".", ",") + " %"
+
 
 class Calculation(models.Model):
     """

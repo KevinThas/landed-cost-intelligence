@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ClassificationRule, CodeMapping, Garment, GarmentFibre, TariffLine
+from .models import ClassificationRule, CodeMapping, Garment, GarmentFibre, GarmentQuote, TariffLine
 
 TRACEABILITY_FIELDSET = (
     "Fiabilité des données",
@@ -60,6 +60,14 @@ class ClassificationRuleAdmin(admin.ModelAdmin):
 class GarmentFibreInline(admin.TabularInline):
     model = GarmentFibre
     extra = 3
+
+
+@admin.register(GarmentQuote)
+class GarmentQuoteAdmin(admin.ModelAdmin):
+    list_display = ("garment", "destination", "quantity", "duty_rate", "created_at")
+    list_filter = ("destination",)
+    search_fields = ("garment__name", "garment__reference")
+    readonly_fields = ("created_at",)
 
 
 @admin.register(Garment)

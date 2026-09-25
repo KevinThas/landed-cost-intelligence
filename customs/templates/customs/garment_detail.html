@@ -66,6 +66,29 @@
 </div>
 
 {% if result.rule %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header">Coût d'arrivée (landed cost)</div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Calculez ce que coûte ce vêtement une fois arrivé à destination : droits de douane selon la ligne
+            tarifaire choisie, transport, autres frais, et TVA à l'import.
+        </p>
+        {% for slug, label in quote_destinations %}
+        <a class="btn btn-primary btn-sm me-2" href="{% url 'quote_create' garment.pk slug %}">Calculer vers {{ label }}</a>
+        {% endfor %}
+        {% if quotes %}
+        <ul class="list-group list-group-flush mt-3">
+            {% for quote in quotes %}
+            <li class="list-group-item px-0">
+                <a href="{% url 'quote_detail' quote.pk %}">{{ quote.created_at|date:"d/m/Y" }} · {{ quote.get_destination_display }} · {{ quote.quantity }} pièce{{ quote.quantity|pluralize }}</a>
+                <span class="text-muted">— {{ quote.breakdown.landed_per_unit|floatformat:"2g" }} € / pièce</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+
 <h2 class="h5 mb-3">Lignes tarifaires correspondantes ({{ result.hs6_display }})</h2>
 {% for code, label in jurisdictions %}
 <div class="card shadow-sm mb-3">

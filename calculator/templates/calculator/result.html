@@ -6,7 +6,7 @@
     <div class="col-md-7">
         <h1 class="h3 mb-1">{{ calculation.product_name|default:calculation.category.name }}</h1>
         <p class="text-muted">Categorie : {{ calculation.category.name }}
-            &mdash; taux total effectif : {{ calculation.category.total_effective_rate|floatformat:1 }}
+            &mdash; taux total effectif : {{ calculation.category.total_effective_rate_display }}
             (confiance : {{ calculation.category.get_confidence_display }})
         </p>
 

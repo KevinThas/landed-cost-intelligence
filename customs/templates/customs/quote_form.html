@@ -1,0 +1,50 @@
+{% extends "calculator/base.html" %}
+{% block title %}Coût d'arrivée - {{ garment.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="h3 mb-1">Coût d'arrivée : {{ garment.name }}</h1>
+        <p class="text-muted">
+            Vers {{ rules.label }}{% if result.hs6 %} · code harmonisé {{ result.hs6_display }}{% endif %}
+            · <a href="{% url 'garment_detail' garment.pk %}">retour à la fiche</a>
+        </p>
+
+        {% if not result.hs6 %}
+        <div class="alert alert-warning">
+            Ce vêtement n'a pas de code harmonisé, donc pas de ligne tarifaire (voir sa fiche). Ajoutez la règle
+            de classement manquante avant de calculer un coût.
+        </div>
+        {% else %}
+        {% if non_eu_origin %}
+        <div class="alert alert-warning">
+            Ce vêtement est déclaré fabriqué en {{ garment.origin_country }} : les droits dépendent de l'origine réelle,
+            pas du pays d'expédition. Le calcul ci-dessous suppose une origine européenne.
+        </div>
+        {% endif %}
+        <div class="alert alert-info small">{{ rules.basis_note }}</div>
+
+        <form method="post" class="card card-body shadow-sm">
+            {% csrf_token %}
+            {% if form.errors %}<div class="alert alert-danger">Merci de corriger les champs indiqués ci-dessous.</div>{% endif %}
+            {% if not form.matches %}
+            <div class="alert alert-secondary small">
+                Aucune ligne tarifaire de {{ rules.label }} n'est saisie sous le code {{ result.hs6_display }} :
+                saisissez le taux de droits à la main.
+            </div>
+            {% endif %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            {% endfor %}
+            <p class="text-muted small">Saisissez toutes les sommes dans la même devise (€) : le calcul ne convertit rien.</p>
+            <button type="submit" class="btn btn-primary">Calculer</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
