@@ -17,6 +17,7 @@
                 <a class="nav-link" href="{% url 'calculation_history' %}">Historique</a>
                 <a class="nav-link" href="{% url 'garment_create' %}">Classer un vêtement</a>
                 <a class="nav-link" href="{% url 'garment_list' %}">Mes vêtements</a>
+                <a class="nav-link" href="{% url 'garment_import' %}">Importer (Excel)</a>
                 {% if user.is_staff %}
                 <a class="nav-link" href="/admin/calculator/tariffcategory/">Matrice tarifaire (admin)</a>
                 <a class="nav-link" href="/admin/customs/tariffline/">Codes douaniers (admin)</a>

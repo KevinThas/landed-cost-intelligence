@@ -1,0 +1,71 @@
+{% extends "calculator/base.html" %}
+{% block title %}Importer depuis Excel - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <h1 class="h3 mb-2">Importer depuis Excel</h1>
+        <p class="text-muted">
+            Chargez tous vos vêtements d'un coup. Téléchargez le modèle, remplissez-le (le mode d'emploi est
+            dans la première feuille), puis envoyez-le ici.
+            {% if is_staff %}Vous pouvez aussi y charger les lignes tarifaires et les règles de classement.{% endif %}
+        </p>
+
+        <div class="mb-3">
+            <a class="btn btn-outline-primary" href="{% url 'garment_import_template' %}">Télécharger le modèle Excel</a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="card card-body shadow-sm mb-4">
+            {% csrf_token %}
+            <label class="form-label" for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+            {{ form.file }}
+            {% for error in form.file.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            <div class="mt-3"><button type="submit" class="btn btn-primary">Importer</button></div>
+        </form>
+
+        {% if reports %}
+        <h2 class="h5 mb-3">Résultat de l'import</h2>
+        {% for report in reports %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>{{ report.name }}</strong>
+                <span>
+                    {% if report.skipped_reason %}
+                    <span class="badge bg-secondary">ignorée</span>
+                    {% else %}
+                    <span class="badge bg-success">{{ report.created }} créé{{ report.created|pluralize }}</span>
+                    <span class="badge bg-primary">{{ report.updated }} mis à jour</span>
+                    {% if report.unchanged %}<span class="badge bg-light text-dark border">{{ report.unchanged }} inchangé{{ report.unchanged|pluralize }}</span>{% endif %}
+                    <span class="badge {% if report.errors %}bg-danger{% else %}bg-light text-dark border{% endif %}">{{ report.errors|length }} erreur{{ report.errors|length|pluralize }}</span>
+                    {% endif %}
+                </span>
+            </div>
+            {% if report.skipped_reason %}
+            <div class="card-body text-muted">{{ report.skipped_reason }}</div>
+            {% endif %}
+            {% if report.warnings %}
+            <ul class="list-group list-group-flush">
+                {% for row, message in report.warnings %}
+                <li class="list-group-item list-group-item-warning small">Ligne {{ row }} : {{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if report.errors %}
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th style="width: 8rem;">Ligne Excel</th><th>Problème (ligne non importée)</th></tr></thead>
+                    <tbody>
+                    {% for row, message in report.errors %}
+                        <tr class="table-danger"><td>{% if row %}{{ row }}{% else %}—{% endif %}</td><td>{{ message }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <a class="btn btn-outline-secondary" href="{% url 'garment_list' %}">Voir mes vêtements</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

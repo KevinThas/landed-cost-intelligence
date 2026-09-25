@@ -68,6 +68,16 @@ def resolve_fibre(name):
     return _SYNONYMS.get(normalize_text(name))
 
 
+def composition_total_error(fibres):
+    total = sum((percent for _, percent in fibres), Decimal(0))
+    if abs(total - 100) > Decimal("0.01"):
+        return (
+            f"Le total fait {total.normalize():f} % : il doit faire 100 %. "
+            "Les accessoires (boutons, zip…) ne comptent pas dans ce total."
+        )
+    return None
+
+
 def parse_composition(text):
     """Transforme « 60% coton, 30% soie, 10% viscose » en [(code_fibre, pourcentage), ...]."""
     segments = [s for s in _SEPARATORS.split(text) if s.strip()]

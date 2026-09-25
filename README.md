@@ -48,6 +48,7 @@ python manage.py runserver
 
 - Calculateur : http://127.0.0.1:8000/
 - Classer un vetement (codes douaniers FR / USA / Chine) : http://127.0.0.1:8000/vetements/nouveau/
+- Importer plusieurs vetements depuis Excel (modele telechargeable) : http://127.0.0.1:8000/vetements/import/
 - Admin (matrice tarifaire + historique) : http://127.0.0.1:8000/admin/
 
 Toutes les pages demandent une connexion (le compte cree avec `createsuperuser`).
@@ -81,6 +82,7 @@ landed_cost_mvp/
   customs/              # classification des vetements et codes douaniers FR / USA / Chine
     fibres.py            # fibres, familles, lecture de la composition (60% coton, ...)
     classification.py     # fibre predominante, code HS propose, lignes tarifaires
+    importer.py           # import Excel (vetements, lignes tarifaires, regles) + modele a telecharger
     fixtures/customs_starter.json  # lignes US (T-shirt, chemisier) et regles de depart
   MISE_EN_LIGNE.md      # guide de deploiement gratuit
 ```

@@ -1,10 +1,26 @@
-from decimal import Decimal
-
 from django import forms
 from django.db import transaction
 
-from .fibres import parse_composition
+from .fibres import composition_total_error, parse_composition
 from .models import ACCESSORY_CHOICES, ClassificationRule, Garment, GarmentFibre
+
+
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+
+
+class ImportForm(forms.Form):
+    file = forms.FileField(
+        label="Classeur Excel (.xlsx)",
+        widget=forms.FileInput(attrs={"class": "form-control", "accept": ".xlsx"}),
+    )
+
+    def clean_file(self):
+        uploaded = self.cleaned_data["file"]
+        if not uploaded.name.lower().endswith(".xlsx"):
+            raise forms.ValidationError("Envoyez un fichier Excel au format .xlsx.")
+        if uploaded.size > MAX_UPLOAD_BYTES:
+            raise forms.ValidationError("Fichier trop volumineux (5 Mo maximum).")
+        return uploaded
 
 
 class GarmentForm(forms.ModelForm):
@@ -47,12 +63,9 @@ class GarmentForm(forms.ModelForm):
             fibres = parse_composition(self.cleaned_data["composition"])
         except ValueError as error:
             raise forms.ValidationError(str(error))
-        total = sum((percent for _, percent in fibres), Decimal(0))
-        if abs(total - 100) > Decimal("0.01"):
-            raise forms.ValidationError(
-                f"Le total fait {total.normalize():f} % : il doit faire 100 %. "
-                "Les accessoires (boutons, zip…) ne comptent pas dans ce total."
-            )
+        error = composition_total_error(fibres)
+        if error:
+            raise forms.ValidationError(error)
         self.fibres = fibres
         return self.cleaned_data["composition"]
 

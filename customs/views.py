@@ -1,9 +1,13 @@
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .classification import classify
 from .fibres import FIBRE_LABELS, GROUP_CHOICES
-from .forms import GarmentForm
+from .forms import GarmentForm, ImportForm
+from .importer import ImportFileError, build_template, import_workbook
 from .models import ACCESSORY_CHOICES, ClassificationRule, Garment, TariffLine
+
+XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def garment_create(request):
@@ -37,3 +41,24 @@ def garment_detail(request, pk):
 def garment_list(request):
     garments = Garment.objects.prefetch_related("fibres")
     return render(request, "customs/garment_list.html", {"garments": garments})
+
+
+def garment_import(request):
+    form = ImportForm(request.POST or None, request.FILES or None)
+    reports = None
+    if request.method == "POST" and form.is_valid():
+        try:
+            reports = import_workbook(form.cleaned_data["file"], allow_reference_data=request.user.is_staff)
+        except ImportFileError as error:
+            form.add_error("file", str(error))
+    return render(request, "customs/garment_import.html", {
+        "form": form,
+        "reports": reports,
+        "is_staff": request.user.is_staff,
+    })
+
+
+def garment_import_template(request):
+    response = HttpResponse(build_template(), content_type=XLSX_TYPE)
+    response["Content-Disposition"] = 'attachment; filename="modele_import_vetements.xlsx"'
+    return response
