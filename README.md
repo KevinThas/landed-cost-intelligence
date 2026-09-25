@@ -57,6 +57,8 @@ Pour l'app des vetements, charger aussi les donnees de depart : `python manage.p
 ## Mise en ligne
 
 Voir [MISE_EN_LIGNE.md](MISE_EN_LIGNE.md) (PythonAnywhere, gratuit, pas a pas).
+Une fois configure, chaque `git push origin main` lance les tests puis met la production a jour
+automatiquement (GitHub Actions, voir la section 9 du guide).
 Le serveur web refuse de demarrer sans `DJANGO_SECRET_KEY` : le mode developpement
 n'est actif que via `python manage.py ...`.
 

@@ -28,20 +28,22 @@ Onglet **Consoles** > **Bash**.
 git clone https://github.com/KevinThas/landed-cost-intelligence.git
 ```
 
-**Si le dépôt est privé** (recommandé dès que la matrice contient de vraies données) : utilisez une clé
-de déploiement en lecture seule, plus sûre qu'un token collé dans une URL.
+**Le plus simple est de garder le dépôt public.** Il ne contient que du code et des données de
+démonstration : vos vraies données (matrice, vêtements) sont dans `db.sqlite3`, qui n'est jamais dans Git.
+Un compte gratuit n'a qu'un accès sortant limité (HTTPS vers une liste de sites, GitHub en fait partie à ma
+connaissance), et je ne peux pas garantir que SSH vers GitHub y soit autorisé.
+
+**Si vous tenez à un dépôt privé :** créez sur GitHub un token "fine-grained" limité à ce seul dépôt, en
+lecture seule (Contents : Read-only). Puis dans la console PythonAnywhere :
 
 ```bash
-ssh-keygen -t ed25519 -C "pythonanywhere" -f ~/.ssh/id_ed25519 -N ""
-cat ~/.ssh/id_ed25519.pub
+git config --global credential.helper store
+git clone https://github.com/KevinThas/landed-cost-intelligence.git
 ```
 
-Copiez la ligne affichée, puis sur GitHub : dépôt > Settings > Deploy keys > Add deploy key
-(laissez "Allow write access" décoché). Ensuite :
-
-```bash
-git clone git@github.com:KevinThas/landed-cost-intelligence.git
-```
+Git demande alors un identifiant (votre nom GitHub) et un mot de passe : collez le token. Il est mémorisé en
+clair dans `~/.git-credentials` sur votre compte PythonAnywhere : c'est acceptable pour un token en lecture
+seule sur un seul dépôt, pas pour un token à droits larges.
 
 ## 3. Installer l'environnement
 
@@ -127,7 +129,7 @@ Toujours dans l'onglet **Web** :
 Cliquez sur le bouton vert **Reload**, puis ouvrez `https://VOTRE_IDENTIFIANT.pythonanywhere.com`.
 Vous devez arriver sur la page de connexion.
 
-## 8. Mettre à jour après un changement de code
+## 8. Mettre à jour à la main (première fois, ou dépannage)
 
 Sur votre PC : `git push origin main`. Puis sur PythonAnywhere (console Bash) :
 
@@ -142,7 +144,65 @@ python manage.py collectstatic --noinput
 
 Puis **Reload** dans l'onglet Web. Les données (`db.sqlite3`) ne sont pas touchées par `git pull`.
 
-## 9. Sauvegardes (important)
+## 9. Mise à jour automatique à chaque push
+
+Une fois configuré, il suffit de faire `git push origin main` : GitHub lance les tests, puis, s'ils
+passent, met le site à jour tout seul (sauvegarde de la base, `git pull`, dépendances, migrations,
+rechargement). En cas de problème, l'exécution devient rouge dans l'onglet **Actions** du dépôt GitHub
+(GitHub envoie en général un e-mail) et le journal détaillé y est affiché.
+
+Comment ça marche : GitHub appelle une adresse de votre site (`/hooks/deploy/`) avec une signature calculée
+à partir d'un secret que vous êtes seul à connaître. Sans ce secret, l'appel est refusé, et la fonction est
+désactivée tant que le secret n'est pas défini.
+
+**À faire une seule fois :**
+
+1. Faites d'abord une mise à jour à la main (section 8) pour récupérer cette fonction sur le site.
+2. Générez un secret dans la console PythonAnywhere (au moins 32 caractères, sinon le site refuse de démarrer) :
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(48))"
+   ```
+
+3. Dans le fichier WSGI (onglet **Web**), ajoutez ces deux lignes avant `from django.core.wsgi import ...` :
+
+   ```python
+   os.environ["DJANGO_DEPLOY_SECRET"] = "COLLEZ_ICI_LE_SECRET"
+   os.environ["DJANGO_DEPLOY_WSGI_FILE"] = "/var/www/VOTRE_IDENTIFIANT_pythonanywhere_com_wsgi.py"
+   ```
+
+   Le chemin est celui du lien du fichier WSGI affiché dans l'onglet Web. Puis **Reload**.
+4. Sur GitHub : dépôt > **Settings** > **Secrets and variables** > **Actions** > **New repository secret**,
+   deux fois :
+   - `DEPLOY_URL` = `https://VOTRE_IDENTIFIANT.pythonanywhere.com`
+   - `DEPLOY_SECRET` = le même secret qu'à l'étape 3.
+5. Dans la console PythonAnywhere, vérifiez que `git pull` fonctionne sans demander de mot de passe.
+6. Faites un petit push et regardez l'onglet **Actions**.
+
+**Ce que fait chaque mise à jour :** copie de sécurité de la base dans `~/landed-cost-intelligence/backups/`
+(les 10 dernières sont gardées), `git pull --ff-only`, vérification que votre commit est bien arrivé,
+installation des dépendances, migrations, fichiers statiques, rechargement. Le déroulé de la dernière mise à
+jour est dans `deploy.log`.
+
+**Si ça échoue :**
+
+| Symptôme | Cause probable et remède |
+|---|---|
+| Avertissement « Secrets absents » | Les secrets GitHub de l'étape 4 n'existent pas : la mise en ligne est simplement sautée. |
+| HTTP 404 | `DJANGO_DEPLOY_SECRET` absent du fichier WSGI, ou site pas rechargé. |
+| HTTP 403 | Le secret GitHub ne correspond pas à celui du site : recopiez-le sans espace. |
+| HTTP 409 | Une mise à jour est déjà en cours (le verrou expire tout seul après 15 minutes). |
+| Échec sur « Récupération du code » | Modifications faites à la main sur le serveur, ou accès à GitHub bloqué depuis le compte gratuit : faites la mise à jour à la main (section 8). |
+| Échec sur « Migrations » | Restaurez la base d'avant : `cp ~/landed-cost-intelligence/backups/db-avant-deploiement-XXXX.sqlite3 ~/landed-cost-intelligence/db.sqlite3`, puis Reload. |
+
+Pour désactiver : supprimez la ligne `DJANGO_DEPLOY_SECRET` du fichier WSGI et rechargez.
+
+**Point de vigilance :** cette fonction a été testée en local avec une simulation complète (vrai dépôt, vrai
+`git pull`, migrations, échecs, secret erroné), mais pas sur PythonAnywhere lui-même. Au premier essai,
+surveillez l'onglet Actions : si le compte gratuit bloque l'accès à GitHub depuis le site, la mise à jour à la
+main (section 8) reste la solution.
+
+## 10. Sauvegardes (important)
 
 La base `db.sqlite3` contient la matrice tarifaire, le cœur du produit. Sur PythonAnywhere elle vit dans
 `~/landed-cost-intelligence/db.sqlite3`.
@@ -164,7 +224,7 @@ Téléchargez ces fichiers sur votre PC de temps en temps (onglet **Files**). L'
 à ma connaissance, une tâche planifiée par jour : vous pouvez y mettre la commande `cp` ci-dessus
 (onglet **Tasks**).
 
-## 10. Limites de l'offre gratuite
+## 11. Limites de l'offre gratuite
 
 À vérifier sur la page des offres de PythonAnywhere, elles évoluent :
 
@@ -177,12 +237,14 @@ Téléchargez ces fichiers sur votre PC de temps en temps (onglet **Files**). L'
 
 Pour le grand public : passer à PostgreSQL et à un hébergement payant (autour de 5 € par mois).
 
-## 11. Sécurité : ce qui est déjà fait, ce qui reste à votre charge
+## 12. Sécurité : ce qui est déjà fait, ce qui reste à votre charge
 
 Déjà en place dans le code :
 
 - Connexion obligatoire sur toutes les pages, mots de passe hachés par Django.
 - Mode sûr par défaut (pas de pages d'erreur détaillées, clé secrète obligatoire, cookies sécurisés).
+- Mise à jour automatique désactivée par défaut, appels signés (HMAC-SHA256), limités dans le temps
+  (5 minutes) et commandes fixes : rien de ce qui arrive dans la requête n'est exécuté.
 
 À votre charge :
 
