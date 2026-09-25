@@ -31,6 +31,11 @@ if not SECRET_KEY:
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1" if DEBUG else "")
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
+# Mise à jour automatique (landed_cost/deploy.py) : désactivée si le secret est absent.
+DEPLOY_SECRET = os.environ.get("DJANGO_DEPLOY_SECRET", "")
+if DEPLOY_SECRET and len(DEPLOY_SECRET) < 32:
+    raise ImproperlyConfigured("DJANGO_DEPLOY_SECRET doit faire au moins 32 caractères.")
+
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

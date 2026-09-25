@@ -1,0 +1,99 @@
+name: Tests et mise en ligne
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py test
+
+  deploy:
+    needs: tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    env:
+      DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
+      DEPLOY_SECRET: ${{ secrets.DEPLOY_SECRET }}
+    steps:
+      - name: Vérifier la configuration
+        run: |
+          if [ -z "$DEPLOY_URL" ] || [ -z "$DEPLOY_SECRET" ]; then
+            echo "::warning::Secrets DEPLOY_URL / DEPLOY_SECRET absents : mise en ligne automatique non configurée (voir MISE_EN_LIGNE.md)."
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Lancer la mise à jour et attendre le résultat
+        if: env.SKIP != '1'
+        run: |
+          set -euo pipefail
+          sha="$GITHUB_SHA"
+          base="${DEPLOY_URL%/}"
+
+          call() {  # $1 = chemin, $2 = corps JSON
+            local ts sig
+            ts=$(date +%s)
+            sig=$(printf '%s.%s' "$ts" "$2" | openssl dgst -sha256 -hmac "$DEPLOY_SECRET" | sed 's/^.* //')
+            curl --silent --show-error --max-time 30 --write-out '\n%{http_code}' -X POST "$base$1" \
+              -H "Content-Type: application/json" \
+              -H "X-Deploy-Timestamp: $ts" -H "X-Deploy-Signature: sha256=$sig" \
+              --data "$2"
+          }
+
+          response=$(call /hooks/deploy/ "{\"sha\": \"$sha\"}")
+          code=$(printf '%s' "$response" | tail -n 1)
+          body=$(printf '%s' "$response" | sed '$d')
+          if [ "$code" != "202" ]; then
+            echo "::error::Le site a refusé la mise à jour (HTTP $code) : $body"
+            exit 1
+          fi
+          echo "Mise à jour lancée pour $sha"
+
+          state=""
+          current=""
+          for attempt in $(seq 1 60); do
+            sleep 5
+            response=$(call /hooks/deploy/status/ "" || true)
+            code=$(printf '%s' "$response" | tail -n 1)
+            body=$(printf '%s' "$response" | sed '$d')
+            [ "$code" = "200" ] || continue
+            state=$(printf '%s' "$body" | jq -r '.state')
+            current=$(printf '%s' "$body" | jq -r '.sha')
+            if [ "$current" = "$sha" ] && [ "$state" != "running" ]; then
+              printf '%s' "$body" | jq -r '.log_tail[]'
+              if [ "$state" = "done" ]; then
+                echo "Mise à jour terminée."
+                break
+              fi
+              echo "::error::La mise à jour a échoué (voir le journal ci-dessus). La production est restée sur l'ancienne version ou dans un état partiel : voir MISE_EN_LIGNE.md, section dépannage."
+              exit 1
+            fi
+          done
+          if [ "$state" = "running" ] || [ "$current" != "$sha" ]; then
+            echo "::error::Pas de réponse finale du site après 5 minutes."
+            exit 1
+          fi
+
+      - name: Vérifier que le site répond
+        if: env.SKIP != '1'
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            code=$(curl --silent --output /dev/null --write-out '%{http_code}' "${DEPLOY_URL%/}/connexion/" || true)
+            if [ "$code" = "200" ]; then echo "Site en ligne (HTTP 200)."; exit 0; fi
+            echo "Tentative $attempt : HTTP $code, nouvel essai dans 10 s"
+            sleep 10
+          done
+          echo "::error::Le site ne répond plus correctement après la mise à jour."
+          exit 1
