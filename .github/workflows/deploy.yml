@@ -86,14 +86,18 @@ jobs:
             exit 1
           fi
 
-      - name: Vérifier que le site répond
+      - name: Vérifier que le site affiche la nouvelle version
         if: env.SKIP != '1'
         run: |
+          short="${GITHUB_SHA:0:7}"
           for attempt in 1 2 3 4 5 6; do
-            code=$(curl --silent --output /dev/null --write-out '%{http_code}' "${DEPLOY_URL%/}/connexion/" || true)
-            if [ "$code" = "200" ]; then echo "Site en ligne (HTTP 200)."; exit 0; fi
-            echo "Tentative $attempt : HTTP $code, nouvel essai dans 10 s"
+            page=$(curl --silent "${DEPLOY_URL%/}/connexion/" || true)
+            if printf '%s' "$page" | grep -q "Version $short"; then
+              echo "Le site tourne bien sur la version $short."
+              exit 0
+            fi
+            echo "Tentative $attempt : version $short pas encore visible, nouvel essai dans 10 s"
             sleep 10
           done
-          echo "::error::Le site ne répond plus correctement après la mise à jour."
+          echo "::error::Le site ne répond pas, ou n'affiche pas la version $short après la mise à jour (rechargement raté ?)."
           exit 1

@@ -101,6 +101,46 @@ class DeployEndpointTests(SimpleTestCase):
         self.assertEqual(self.client.post(**signed("/hooks/deploy/status/")).json()["state"], "idle")
 
 
+class VersionTests(SimpleTestCase):
+    def setUp(self):
+        from landed_cost import version
+
+        self.version = version
+        version.get_version.cache_clear()
+        self.addCleanup(version.get_version.cache_clear)
+
+    @staticmethod
+    def git_output(text, code=0):
+        return mock.Mock(returncode=code, stdout=text + "\n", stderr="")
+
+    def test_reads_commit_date_and_subject_from_git(self):
+        outputs = [self.git_output("de42c9e"), self.git_output("2026-09-25T17:58:00+02:00"), self.git_output("Un titre")]
+        with mock.patch("landed_cost.version.subprocess.run", side_effect=outputs):
+            info = self.version.get_version()
+        self.assertEqual(info, {"short": "de42c9e", "date": "25/09/2026 17:58", "subject": "Un titre"})
+
+    def test_result_is_computed_once(self):
+        outputs = [self.git_output("aaaaaaa"), self.git_output("2026-01-02T03:04:05+00:00"), self.git_output("x")]
+        with mock.patch("landed_cost.version.subprocess.run", side_effect=outputs) as run:
+            self.version.get_version()
+            self.version.get_version()
+        self.assertEqual(run.call_count, 3)
+
+    def test_unknown_when_git_is_missing_or_fails(self):
+        with mock.patch("landed_cost.version.subprocess.run", side_effect=FileNotFoundError):
+            self.assertEqual(self.version.get_version()["short"], "inconnue")
+        self.version.get_version.cache_clear()
+        with mock.patch("landed_cost.version.subprocess.run", return_value=self.git_output("", code=128)):
+            self.assertEqual(self.version.get_version()["short"], "inconnue")
+
+    def test_version_is_shown_in_the_page_footer(self):
+        info = {"short": "abc1234", "date": "25/09/2026 17:58", "subject": "Mon commit"}
+        with mock.patch("landed_cost.version.get_version", return_value=info):
+            response = self.client.get("/connexion/")
+        self.assertContains(response, "Version abc1234 · 25/09/2026 17:58")
+        self.assertContains(response, 'title="Mon commit"')
+
+
 def load_script():
     spec = importlib.util.spec_from_file_location("deploy_update", BASE_DIR / "scripts" / "deploy_update.py")
     module = importlib.util.module_from_spec(spec)

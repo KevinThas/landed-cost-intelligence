@@ -36,5 +36,9 @@
     <div class="container pb-5">
         {% block content %}{% endblock %}
     </div>
+
+    <footer class="container text-center text-muted small pb-4">
+        <span title="{{ app_version.subject }}">Version {{ app_version.short }}{% if app_version.date %} · {{ app_version.date }}{% endif %}</span>
+    </footer>
 </body>
 </html>
