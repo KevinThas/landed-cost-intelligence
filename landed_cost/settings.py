@@ -1,19 +1,39 @@
 """
-Configuration Django - MVP Landed Cost Intelligence.
-Volontairement simple : SQLite en local, pas de service externe.
-Pour passer en production plus tard : changer uniquement le bloc DATABASES
-(ex: PostgreSQL) et definir DEBUG=False + ALLOWED_HOSTS.
+Configuration Django - Landed Cost Intelligence.
+
+En local, `python manage.py ...` active le mode développement (DEBUG, clé de dev).
+Le serveur web (WSGI) est en mode sûr par défaut : il exige les variables
+d'environnement DJANGO_SECRET_KEY et DJANGO_ALLOWED_HOSTS (voir MISE_EN_LIGNE.md).
 """
 
+import os
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "dev-only-secret-key-a-changer-avant-toute-mise-en-ligne"
 
-DEBUG = True
+def env_list(name, default=""):
+    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+DEBUG = os.environ.get("DJANGO_DEBUG") == "1"
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "Variable d'environnement DJANGO_SECRET_KEY manquante (obligatoire hors mode développement)."
+        )
+    SECRET_KEY = "dev-only-secret-key-ne-jamais-utiliser-en-ligne"
+
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1" if DEBUG else "")
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "calculator",
+    "customs",
 ]
 
 MIDDLEWARE = [
@@ -31,9 +52,14 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "login"
 
 ROOT_URLCONF = "landed_cost.urls"
 
@@ -55,7 +81,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "landed_cost.wsgi.application"
 
-# Base SQLite locale - un simple fichier, zero configuration.
+# Base SQLite : un simple fichier. À sauvegarder régulièrement (c'est la matrice tarifaire).
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -76,5 +102,6 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

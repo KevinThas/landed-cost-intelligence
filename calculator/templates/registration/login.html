@@ -1,0 +1,26 @@
+{% extends "calculator/base.html" %}
+{% block title %}Connexion - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+        <h1 class="h3 mb-3">Connexion</h1>
+        <form method="post" class="card card-body shadow-sm">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger">Identifiant ou mot de passe incorrect.</div>
+            {% endif %}
+            <div class="mb-3">
+                <label class="form-label" for="id_username">Identifiant</label>
+                <input type="text" name="username" id="id_username" class="form-control" autocomplete="username" autofocus required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="id_password">Mot de passe</label>
+                <input type="password" name="password" id="id_password" class="form-control" autocomplete="current-password" required>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-primary">Se connecter</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "calculator/base.html" %}
+{% block title %}{{ garment.name }} - Codes douaniers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">{{ garment.name }}</h1>
+        <div class="text-muted">
+            {% if garment.reference %}Réf. {{ garment.reference }} · {% endif %}{{ garment.garment_type }} · fabriqué en {{ garment.origin_country }}
+        </div>
+    </div>
+    <div>
+        <a class="btn btn-outline-secondary btn-sm" href="/admin/customs/garment/{{ garment.pk }}/change/">Modifier (admin)</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'garment_create' %}">Nouveau vêtement</a>
+    </div>
+</div>
+
+{% for warning in result.warnings %}
+<div class="alert alert-warning">{{ warning }}</div>
+{% endfor %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header">Composition et fibre prédominante</div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Tissu principal :</strong> {{ garment.composition_display }}</p>
+                <table class="table table-sm mb-2">
+                    <thead><tr><th>Famille de fibres</th><th class="text-end">Poids</th></tr></thead>
+                    <tbody>
+                    {% for label, total, is_top in groups %}
+                        <tr{% if is_top %} class="table-success"{% endif %}>
+                            <td>{{ label }}{% if is_top %} <span class="badge bg-success">prédominante</span>{% endif %}</td>
+                            <td class="text-end">{{ total|floatformat:"-2" }} %</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p class="mb-0 text-muted small">
+                    Accessoires non textiles : {% if accessories %}{{ accessories|join:", " }}{% else %}aucun{% endif %}
+                    (ils n'entrent pas dans le calcul de la fibre prédominante).
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header">Code harmonisé proposé (6 chiffres)</div>
+            <div class="card-body">
+                {% if result.rule %}
+                <div class="display-6 mb-1">{{ result.hs6_display }}</div>
+                <p class="text-muted mb-2">
+                    Règle : {{ result.rule.garment_type }}, fibre prédominante « {{ result.group_label|lower }} ».
+                </p>
+                <p class="mb-0 small">
+                    Les 6 premiers chiffres sont communs à la France/UE, aux États-Unis et à la Chine.
+                    Confiance de la règle : <span class="badge bg-secondary">{{ result.rule.get_confidence_display }}</span>
+                    {% if result.rule.validated_by_expert %}<span class="badge bg-success">validée par l'experte</span>{% endif %}
+                </p>
+                {% else %}
+                <p class="mb-0 text-muted">Pas de code proposé : voir l'avertissement ci-dessus.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if result.rule %}
+<h2 class="h5 mb-3">Lignes tarifaires correspondantes ({{ result.hs6_display }})</h2>
+{% for code, label in jurisdictions %}
+<div class="card shadow-sm mb-3">
+    <div class="card-header">{{ label }}</div>
+    {% for jurisdiction_code, matches in result.lines.items %}
+        {% if jurisdiction_code == code %}
+            {% if matches %}
+            <div class="table-responsive">
+                <table class="table table-sm mb-0 align-middle">
+                    <thead><tr><th>Code</th><th>Description</th><th>Droit</th><th>Condition de composition</th><th>Confiance</th></tr></thead>
+                    <tbody>
+                    {% for match in matches %}
+                        <tr{% if match.status == "ko" %} class="text-muted"{% endif %}>
+                            <td class="text-nowrap"><strong>{{ match.line.code }}</strong></td>
+                            <td>{{ match.line.description }}{% if match.line.notes %}<div class="small text-muted">{{ match.line.notes }}</div>{% endif %}</td>
+                            <td class="text-nowrap">{{ match.line.duty_display }}</td>
+                            <td>
+                                {% if match.status == "ok" %}<span class="badge bg-success">Remplie</span> {{ match.line.condition_display }}
+                                {% elif match.status == "ko" %}<span class="badge bg-secondary">Non remplie</span> {{ match.line.condition_display }}
+                                {% else %}<span class="badge bg-light text-dark border">Aucune condition de fibre</span>{% endif %}
+                            </td>
+                            <td><span class="badge bg-secondary">{{ match.line.get_confidence_display }}</span></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body text-muted">
+                Le code harmonisé {{ result.hs6_display }} s'applique aussi ici, mais aucune ligne nationale détaillée n'est encore saisie.
+                À ajouter dans l'admin (Lignes tarifaires) ou par import Excel.
+            </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% if result.mappings %}
+<h2 class="h5 mb-3 mt-4">Correspondances enregistrées</h2>
+<ul class="list-group mb-3">
+    {% for mapping in result.mappings %}
+    <li class="list-group-item">
+        <strong>{{ mapping.from_line }}</strong> ↔ <strong>{{ mapping.to_line }}</strong>
+        {% if mapping.validated_by_expert %}<span class="badge bg-success">validée</span>{% endif %}
+        {% if mapping.condition_note %}<div class="small text-muted">{{ mapping.condition_note }}</div>{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<p class="small text-muted">
+    Aux États-Unis, le code se termine par un suffixe statistique à 2 chiffres (sexe, coupe…) à choisir séparément.
+    Les droits affichés sont les droits de base du tarif (colonne « General ») : les surtaxes spécifiques à l'origine
+    (ex. mesures de 2025 sur les produits européens) ne sont pas encore intégrées.
+    Cet outil aide à décider, il ne remplace pas la validation d'une experte.
+</p>
+{% endif %}
+{% endblock %}

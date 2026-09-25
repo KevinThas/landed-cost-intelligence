@@ -1,0 +1,30 @@
+{% extends "calculator/base.html" %}
+{% block title %}Mes vêtements - Landed Cost Intelligence{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Mes vêtements</h1>
+    <a class="btn btn-primary" href="{% url 'garment_create' %}">Classer un vêtement</a>
+</div>
+
+{% if garments %}
+<div class="table-responsive card shadow-sm">
+    <table class="table table-hover mb-0 align-middle">
+        <thead><tr><th>Vêtement</th><th>Type</th><th>Composition</th><th>Fabriqué en</th><th>Saisi le</th></tr></thead>
+        <tbody>
+        {% for garment in garments %}
+            <tr>
+                <td><a href="{% url 'garment_detail' garment.pk %}">{{ garment.name }}</a>{% if garment.reference %}<div class="small text-muted">{{ garment.reference }}</div>{% endif %}</td>
+                <td>{{ garment.garment_type }}</td>
+                <td>{{ garment.composition_display }}</td>
+                <td>{{ garment.origin_country }}</td>
+                <td>{{ garment.created_at|date:"d/m/Y" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">Aucun vêtement pour le moment.</div>
+{% endif %}
+{% endblock %}

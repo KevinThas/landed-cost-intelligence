@@ -47,7 +47,23 @@ python manage.py runserver
 ```
 
 - Calculateur : http://127.0.0.1:8000/
+- Classer un vetement (codes douaniers FR / USA / Chine) : http://127.0.0.1:8000/vetements/nouveau/
 - Admin (matrice tarifaire + historique) : http://127.0.0.1:8000/admin/
+
+Toutes les pages demandent une connexion (le compte cree avec `createsuperuser`).
+Pour l'app des vetements, charger aussi les donnees de depart : `python manage.py loaddata customs_starter`.
+
+## Mise en ligne
+
+Voir [MISE_EN_LIGNE.md](MISE_EN_LIGNE.md) (PythonAnywhere, gratuit, pas a pas).
+Le serveur web refuse de demarrer sans `DJANGO_SECRET_KEY` : le mode developpement
+n'est actif que via `python manage.py ...`.
+
+## Tests
+
+```bash
+python manage.py test
+```
 
 ## Structure du projet
 
@@ -62,6 +78,11 @@ landed_cost_mvp/
     views.py                # logique des pages
     templates/calculator/    # HTML (Bootstrap CDN, pas de JS build)
     fixtures/tariff_categories.json  # donnees de demo
+  customs/              # classification des vetements et codes douaniers FR / USA / Chine
+    fibres.py            # fibres, familles, lecture de la composition (60% coton, ...)
+    classification.py     # fibre predominante, code HS propose, lignes tarifaires
+    fixtures/customs_starter.json  # lignes US (T-shirt, chemisier) et regles de depart
+  MISE_EN_LIGNE.md      # guide de deploiement gratuit
 ```
 
 ## Prochaines etapes (a ne PAS faire tout de suite)

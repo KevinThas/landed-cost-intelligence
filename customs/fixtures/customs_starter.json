@@ -1,0 +1,563 @@
+[
+  {
+    "model": "customs.tariffline",
+    "pk": 1,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6109.10.00",
+      "hs6": "610910",
+      "description": "T-shirts, tricotés : de coton (Of cotton)",
+      "ad_valorem_rate": "0.1650",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 2,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6109.90.10",
+      "hs6": "610990",
+      "description": "T-shirts, tricotés : de fibres synthétiques ou artificielles (Of man-made fibers)",
+      "ad_valorem_rate": "0.3200",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 3,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6109.90.15",
+      "hs6": "610990",
+      "description": "T-shirts, tricotés : de laine, à manches longues (Of wool, with long sleeves)",
+      "ad_valorem_rate": "0.0560",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "Manches longues uniquement.",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 4,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6109.90.40",
+      "hs6": "610990",
+      "description": "T-shirts, tricotés : contenant 70 % ou plus de soie (Containing 70 percent or more by weight of silk or silk waste)",
+      "ad_valorem_rate": "0.0260",
+      "specific_duty": "",
+      "condition_group": "soie",
+      "condition_fibre": "",
+      "condition_min_pct": "70",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 5,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6109.90.80",
+      "hs6": "610990",
+      "description": "T-shirts, tricotés : autres matières textiles (Other)",
+      "ad_valorem_rate": "0.1600",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "Ligne résiduelle : laine sans manches longues, soie à moins de 70 %, lin, etc.",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 6,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.10.00",
+      "hs6": "620610",
+      "description": "Chemisiers femme/fille, tissés : de soie (Of silk or silk waste)",
+      "ad_valorem_rate": "0.0690",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 7,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.20.10",
+      "hs6": "620620",
+      "description": "Chemisiers femme/fille, tissés : de laine ou poils fins, artisanat certifié",
+      "ad_valorem_rate": "0.0850",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "Applicable seulement avec la certification « hand-loomed / folklore » (Certified hand-loomed and folklore products).",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 8,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.20.20",
+      "hs6": "620620",
+      "description": "Chemisiers femme/fille, tissés : de laine ou poils fins, contenant 30 % ou plus de soie (Containing 30 percent or more by weight of silk)",
+      "ad_valorem_rate": "0.0710",
+      "specific_duty": "",
+      "condition_group": "soie",
+      "condition_fibre": "",
+      "condition_min_pct": "30",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 9,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.20.30",
+      "hs6": "620620",
+      "description": "Chemisiers femme/fille, tissés : de laine ou poils fins, autres (Other)",
+      "ad_valorem_rate": "0.1700",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 10,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.30.10",
+      "hs6": "620630",
+      "description": "Chemisiers femme/fille, tissés : de coton, artisanat certifié",
+      "ad_valorem_rate": "0.0900",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "Applicable seulement avec la certification « hand-loomed / folklore » (Certified hand-loomed and folklore products).",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 11,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.30.20",
+      "hs6": "620630",
+      "description": "Chemisiers femme/fille, tissés : de coton, contenant 36 % ou plus de lin (Containing 36 percent or more by weight of flax)",
+      "ad_valorem_rate": "0.0350",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "lin",
+      "condition_min_pct": "36",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 12,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.30.30",
+      "hs6": "620630",
+      "description": "Chemisiers femme/fille, tissés : de coton, autres (Other)",
+      "ad_valorem_rate": "0.1540",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 13,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.40.10",
+      "hs6": "620640",
+      "description": "Chemisiers femme/fille, tissés : de fibres synthétiques ou artificielles, artisanat certifié",
+      "ad_valorem_rate": "0.1130",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "Applicable seulement avec la certification « hand-loomed / folklore » (Certified hand-loomed and folklore products).",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 14,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.40.20",
+      "hs6": "620640",
+      "description": "Chemisiers femme/fille, tissés : de fibres synthétiques ou artificielles, contenant 30 % ou plus de soie (Containing 30 percent or more by weight of silk)",
+      "ad_valorem_rate": "0.0400",
+      "specific_duty": "",
+      "condition_group": "soie",
+      "condition_fibre": "",
+      "condition_min_pct": "30",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 15,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.40.25",
+      "hs6": "620640",
+      "description": "Chemisiers femme/fille, tissés : de fibres synthétiques ou artificielles, contenant 36 % ou plus de laine (Containing 36 percent or more by weight of wool)",
+      "ad_valorem_rate": "0.1430",
+      "specific_duty": "56,3 ¢/kg",
+      "condition_group": "laine",
+      "condition_fibre": "",
+      "condition_min_pct": "36",
+      "notes": "Droit composé : 56,3 ¢/kg + 14,3 %.",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 16,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.40.30",
+      "hs6": "620640",
+      "description": "Chemisiers femme/fille, tissés : de fibres synthétiques ou artificielles, autres (Other)",
+      "ad_valorem_rate": "0.2690",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.tariffline",
+    "pk": 17,
+    "fields": {
+      "jurisdiction": "US",
+      "code": "6206.90.00",
+      "hs6": "620690",
+      "description": "Chemisiers femme/fille, tissés : d'autres matières textiles (Of other textile materials)",
+      "ad_valorem_rate": "0.0670",
+      "specific_duty": "",
+      "condition_group": "",
+      "condition_fibre": "",
+      "condition_min_pct": null,
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "USITC HTS (hts.usitc.gov, recherche par code) lu le 2026-09-25",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 1,
+    "fields": {
+      "garment_type": "T-shirt, débardeur, maillot de corps (tricoté)",
+      "fibre_group": "soie",
+      "hs6": "610990",
+      "notes": "6109.10 = coton ; toutes les autres fibres relèvent de 6109.90.",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 2,
+    "fields": {
+      "garment_type": "T-shirt, débardeur, maillot de corps (tricoté)",
+      "fibre_group": "laine",
+      "hs6": "610990",
+      "notes": "6109.10 = coton ; toutes les autres fibres relèvent de 6109.90.",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 3,
+    "fields": {
+      "garment_type": "T-shirt, débardeur, maillot de corps (tricoté)",
+      "fibre_group": "coton",
+      "hs6": "610910",
+      "notes": "6109.10 = coton ; toutes les autres fibres relèvent de 6109.90.",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 4,
+    "fields": {
+      "garment_type": "T-shirt, débardeur, maillot de corps (tricoté)",
+      "fibre_group": "autres_vegetales",
+      "hs6": "610990",
+      "notes": "6109.10 = coton ; toutes les autres fibres relèvent de 6109.90.",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 5,
+    "fields": {
+      "garment_type": "T-shirt, débardeur, maillot de corps (tricoté)",
+      "fibre_group": "fibres_chimiques",
+      "hs6": "610990",
+      "notes": "6109.10 = coton ; toutes les autres fibres relèvent de 6109.90.",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 6,
+    "fields": {
+      "garment_type": "Chemisier, chemise femme/fille (tissé)",
+      "fibre_group": "soie",
+      "hs6": "620610",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 7,
+    "fields": {
+      "garment_type": "Chemisier, chemise femme/fille (tissé)",
+      "fibre_group": "laine",
+      "hs6": "620620",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 8,
+    "fields": {
+      "garment_type": "Chemisier, chemise femme/fille (tissé)",
+      "fibre_group": "coton",
+      "hs6": "620630",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 9,
+    "fields": {
+      "garment_type": "Chemisier, chemise femme/fille (tissé)",
+      "fibre_group": "autres_vegetales",
+      "hs6": "620690",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "customs.classificationrule",
+    "pk": 10,
+    "fields": {
+      "garment_type": "Chemisier, chemise femme/fille (tissé)",
+      "fibre_group": "fibres_chimiques",
+      "hs6": "620640",
+      "notes": "",
+      "confidence": "a_verifier",
+      "source": "Nomenclature HS, positions 6109 et 6206 (intitulés lus sur hts.usitc.gov le 2026-09-25)",
+      "last_verified": "2026-09-25",
+      "next_review": "2026-10-25",
+      "validated_by_expert": false,
+      "created_at": "2026-09-25T00:00:00Z",
+      "updated_at": "2026-09-25T00:00:00Z"
+    }
+  }
+]
